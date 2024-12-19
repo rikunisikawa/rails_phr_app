@@ -1,5 +1,23 @@
 # README
 
+以下のコマンドを使用して、Railsアプリケーションを新規作成し、データベースを設定します:
+
+```sh
+docker compose run --rm web rails new . --force --no-deps --database=mysql
+```
+このコマンドは、新しいRailsアプリケーションを作成します。`--force`オプションは既存のファイルを上書きし、`--no-deps`オプションは依存関係をインストールしません。`--database=mysql`オプションはMySQLデータベースを使用することを指定します。
+
+```sh
+docker compose build
+```
+このコマンドは、Dockerイメージをビルドします。
+
+```sh
+docker compose exec web rake db:create
+```
+このコマンドは、データベースを作成します。
+
+
 * Rubyのバージョン
 
 * データベース設定
