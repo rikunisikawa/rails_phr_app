@@ -21,7 +21,7 @@ docker compose exec web rake db:create
 
 ## データベース設定
 
-データベース接続の設定は以下の通りです:
+  データベース接続の設定:
 
 ```yaml
 default: &default
