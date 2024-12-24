@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_12_21_003100) do
+ActiveRecord::Schema[7.0].define(version: 2024_12_23_110820) do
   create_table "records", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.date "date"
     t.float "health_score"
@@ -19,6 +19,17 @@ ActiveRecord::Schema[7.0].define(version: 2024_12_21_003100) do
     t.string "user"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "exercise_type"
+    t.integer "exercise_duration"
+    t.integer "meditation_duration"
+    t.integer "sleep_duration"
+    t.integer "stress_level"
+    t.float "weight"
+    t.float "temperature"
+    t.integer "concentration"
+    t.integer "fatigue"
+    t.boolean "exercise"
+    t.boolean "meditation"
   end
 
 end

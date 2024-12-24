@@ -21,7 +21,7 @@ docker compose exec web rake db:create
 
 ## データベース設定
 
-  データベース接続の設定:
+データベース接続の設定:
 
 ```yaml
 default: &default
@@ -88,6 +88,9 @@ default: &default
 
 - **スケーラビリティ**
   - 将来的に機能追加が容易にできるように設計する。
+
+- **デザイン**
+  - デザインのルールはBootstrapを使用し、マテリアルデザインのようなイメージで統一する。
 
 ## データベース設計
 
