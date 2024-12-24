@@ -22,6 +22,10 @@ COPY Gemfile Gemfile.lock /rails_phr/
 RUN gem install rubocop solargraph && \
     bundle install --jobs=4 --retry=3
 
+# Font Awesome をインストール
+RUN yarn add @fortawesome/fontawesome-free
+RUN yarn add chartkick chart.js
+
 # アプリケーションの全ファイルをコンテナにコピー
 COPY . /rails_phr/
 

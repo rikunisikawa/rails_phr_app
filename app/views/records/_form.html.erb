@@ -1,0 +1,213 @@
+<div class="container-fluid">
+  <%= form_with(model: record, local: true, class: "form") do |form| %>
+    <% if record.errors.any? %>
+      <div id="error_explanation" class="alert alert-danger">
+        <h2><%= pluralize(record.errors.count, "エラー") %> がこのレコードの保存を妨げました:</h2>
+        <ul>
+          <% record.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <div class="form-group mb-4">
+      <%= form.label :date, "日付" %>
+      <div class=" d-flex">
+        <%= form.text_field :date, class: "form-control", value: record.date, readonly: true %>
+        <div class="actions">
+          <%= form.submit "保存", class: "btn btn-primary" %>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="form-group mb-4 position-relative">
+          <%= form.label :health_score, "健康スコア" %><br/>
+          <div class="d-flex justify-content-between align-items-center">
+        <%= form.range_field :health_score, class: "form-control-range slider flex-grow-1 me-3", min: 0, max: 100, step: 1, value: record.health_score, id: "health_score_slider" %>
+        <input type="number" min="0" max="100" step="1" value="<%= record.health_score %>" id="health_score_input" class="form-control number-input" style="width: 70px">
+          </div>
+        </div>
+
+        <div class="form-group mb-4 position-relative">
+          <%= form.label :mood_score, "気分スコア" %><br/>
+          <div class="d-flex justify-content-between align-items-center">
+        <%= form.range_field :mood_score, class: "form-control-range slider flex-grow-1 me-3", min: 0, max: 100, step: 1, value: record.mood_score, id: "mood_score_slider" %>
+        <input type="number" min="0" max="100" step="1" value="<%= record.mood_score %>" id="mood_score_input" class="form-control number-input" style="width: 70px">
+          </div>
+        </div>
+
+        <div class="form-group mb-4 position-relative">
+          <%= form.label :stress_level, "ストレスレベル (1-10)" %><br/>
+          <div class="d-flex justify-content-between align-items-center">
+        <%= form.range_field :stress_level, class: "form-control-range slider flex-grow-1 me-3", min: 0, max: 100, step: 1, value: record.stress_level, id: "stress_level_slider" %>
+        <input type="number" min="0" max="100" step="1" value="<%= record.stress_level %>" id="stress_level_input" class="form-control number-input" style="width: 70px">
+          </div>
+        </div>
+
+        <div class="form-group mb-4 position-relative">
+          <%= form.label :concentration, "集中力 (1-10)" %><br/>
+          <div class="d-flex justify-content-between align-items-center">
+        <%= form.range_field :concentration, class: "form-control-range slider flex-grow-1 me-3", min: 0, max: 100, step: 1, value: record.concentration, id: "concentration_slider" %>
+        <input type="number" min="0" max="100" step="1" value="<%= record.concentration %>" id="concentration_input" class="form-control number-input" style="width: 70px">
+          </div>
+        </div>
+
+        <div class="form-group mb-4 position-relative">
+          <%= form.label :fatigue, "疲労感 (1-10)" %><br/>
+          <div class="d-flex justify-content-between align-items-center">
+        <%= form.range_field :fatigue, class: "form-control-range slider flex-grow-1 me-3", min: 0, max: 100, step: 1, value: record.fatigue, id: "fatigue_slider" %>
+        <input type="number" min="0" max="100" step="1" value="<%= record.fatigue %>" id="fatigue_input" class="form-control number-input" style="width: 70px">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-group mb-4">
+          <%= form.label :weight, "体重 (kg)" %>
+          <%= form.number_field :weight, class: "form-control" %>
+        </div>
+
+        <div class="form-group mb-4">
+          <%= form.label :temperature, "体温 (℃)" %>
+          <%= form.number_field :temperature, class: "form-control" %>
+        </div>
+
+        <div class="form-group mb-4">
+          <%= form.label :memo, "メモ" %>
+          <%= form.text_area :memo, class: "form-control" %>
+        </div>
+      </div>
+      <div class="col-md-4">
+    <div class="accordion mb-4" id="accordionExercise">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingExercise">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExercise" aria-expanded="false" aria-controls="collapseExercise">
+            <%= form.check_box :exercise, { id: "exercise_checkbox" } %>
+            <%= form.label :exercise, "運動の実施" %>
+          </button>
+        </h2>
+        <div id="collapseExercise" class="accordion-collapse collapse" aria-labelledby="headingExercise" data-bs-parent="#accordionExample">
+          <div class="accordion-body">
+            <div class="form-group mb-4">
+              <%= form.label :exercise_type, "運動の種類 (例: ランニング, 筋トレ)" %>
+              <%= form.select :exercise_type, options_for_select(["ランニング", "筋トレ", "ヨガ", "サイクリング", "水泳", "その他"], record.exercise_type), { include_blank: "選択してください" }, class: "form-control", onchange: "toggleExerciseTypeInput(this)" %>
+              <%= form.text_field :exercise_type_other, class: "form-control mt-2", placeholder: "その他の運動の種類を入力", style: "display: none;" %>
+              <%= form.label :exercise_duration, "運動時間 (分)" %>
+              <%= form.number_field :exercise_duration, class: "form-control" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion mb-4" id="accordionMeditation">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingMeditation">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMeditation" aria-expanded="false" aria-controls="collapseMeditation">
+            <%= form.check_box :meditation, { id: "meditation_checkbox" } %>
+            <%= form.label :meditation, "瞑想の実施" %>
+          </button>
+        </h2>
+        <div id="collapseMeditation" class="accordion-collapse collapse" aria-labelledby="headingMeditation" data-bs-parent="#accordionExample">
+          <div class="accordion-body">
+            <div class="form-group mb-4">
+              <%= form.label :meditation_duration, "瞑想時間 (分)" %>
+              <%= form.number_field :meditation_duration, class: "form-control" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group mb-4">
+      <%= form.label :sleep_duration, "睡眠時間 (時間)" %>
+      <%= form.number_field :sleep_duration, class: "form-control" %>
+    </div>
+      </div>
+    </div>
+
+  <% end %>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const exerciseCheckbox = document.getElementById("exercise_checkbox");
+    const exerciseDetails = document.getElementById("collapseExercise");
+    const meditationCheckbox = document.getElementById("meditation_checkbox");
+    const meditationDetails = document.getElementById("collapseMeditation");
+
+    exerciseCheckbox.addEventListener("change", function() {
+      if (exerciseCheckbox.checked) {
+        exerciseDetails.classList.add("show");
+      } else {
+        exerciseDetails.classList.remove("show");
+      }
+    });
+
+    meditationCheckbox.addEventListener("change", function() {
+      if (meditationCheckbox.checked) {
+        meditationDetails.classList.add("show");
+      } else {
+        meditationDetails.classList.remove("show");
+      }
+    });
+
+    // 初期状態の設定
+    if (exerciseCheckbox.checked) {
+      exerciseDetails.classList.add("show");
+    }
+    if (meditationCheckbox.checked) {
+      meditationDetails.classList.add("show");
+    }
+
+    // スライダーと入力欄の同期
+    const syncSliderWithInput = (sliderId, inputId) => {
+      const slider = document.getElementById(sliderId);
+      const input = document.getElementById(inputId);
+
+      slider.addEventListener("input", function() {
+        input.value = slider.value;
+      });
+
+      input.addEventListener("input", function() {
+        slider.value = input.value;
+      });
+    };
+
+    syncSliderWithInput("health_score_slider", "health_score_input");
+    syncSliderWithInput("mood_score_slider", "mood_score_input");
+    syncSliderWithInput("stress_level_slider", "stress_level_input");
+    syncSliderWithInput("concentration_slider", "concentration_input");
+    syncSliderWithInput("fatigue_slider", "fatigue_input");
+  });
+
+  function toggleExerciseTypeInput(select) {
+    const otherInput = document.querySelector('input[name="record[exercise_type_other]"]');
+    if (select.value === "その他") {
+      otherInput.style.display = "block";
+    } else {
+      otherInput.style.display = "none";
+      otherInput.value = "";
+    }
+  }
+  document.addEventListener("DOMContentLoaded", function() {
+    const select = document.querySelector('select[name="record[exercise_type]"]');
+    toggleExerciseTypeInput(select);
+    select.addEventListener('change', function() {
+      toggleExerciseTypeInput(select);
+    });
+  });
+</script>
+
+<style>
+  .form-group {
+    margin-bottom: 20px; /* セクション間のスペース */
+  }
+  .slider-marker {
+    position: absolute;
+    top: 50%; /* スライダーの中央に配置 */
+    transform: translateY(-50%); /* 中央揃え */
+    width: 2px;
+    height: 20px;
+    background-color: red;
+  }
+</style>
