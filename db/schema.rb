@@ -10,11 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_12_23_110820) do
+ActiveRecord::Schema[7.0].define(version: 2024_12_25_150526) do
   create_table "records", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.date "date"
-    t.float "health_score"
-    t.float "mood_score"
+    t.integer "health_score"
+    t.integer "mood_score"
     t.text "memo"
     t.string "user"
     t.datetime "created_at", null: false
