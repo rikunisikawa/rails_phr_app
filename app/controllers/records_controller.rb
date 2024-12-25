@@ -3,8 +3,9 @@ class RecordsController < ApplicationController
     today = Date.today
     @records = Record.all
     @health_scores = @records.group_by_day(:date).average(:health_score)
-    # .transform_values { |v| v || 0 }
-    p @health_scores
+    @mood_scores = @records.group_by_day(:date).average(:mood_score)
+    p 'mood'
+    p @mood_scores
     # # 今日の数値が入力されているかチェック
     # today_record = @records.find { |r| r.date == today }
     # # 今日の日付のレコードが存在しない場合、新規作成画面にリダイレクト

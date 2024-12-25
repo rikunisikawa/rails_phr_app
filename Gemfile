@@ -45,7 +45,6 @@ gem "bootsnap", require: false
 gem 'chartkick'
 gem 'chart-js-rails'
 gem 'groupdate'
-gem 'webpacker'
 # Use Sass to process CSS
 # gem "sassc-rails"
 
