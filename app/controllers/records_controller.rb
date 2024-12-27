@@ -4,8 +4,13 @@ class RecordsController < ApplicationController
     @records = Record.all
     @health_scores = @records.group_by_day(:date).average(:health_score)
     @mood_scores = @records.group_by_day(:date).average(:mood_score)
-    p 'mood'
-    p @mood_scores
+    @exercise_data = @records.group_by_day(:date).average(:exercise).transform_values { |v| v ? 1 : nil }
+    @meditation_data = @records.group_by_day(:date).average(:meditation).transform_values { |v| v ? 1 : nil }
+
+    p @exercise_data
+    p '----------------'
+    p @meditation_data
+
     # # 今日の数値が入力されているかチェック
     # today_record = @records.find { |r| r.date == today }
     # # 今日の日付のレコードが存在しない場合、新規作成画面にリダイレクト

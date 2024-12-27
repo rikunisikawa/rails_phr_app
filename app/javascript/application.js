@@ -4,6 +4,7 @@ import "controllers"
 import "chartkick"
 import "Chart.bundle"
 
+// index.html.erbのテーブルのカラムにホバーを充てると、そのカラム全体がハイライトされる
 document.addEventListener("DOMContentLoaded", function() {
   const table = document.querySelector(".table-hover-column");
   if (table) {
@@ -47,6 +48,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 
+// サイドバーの表示・非表示を切り替える
 document.getElementById('sidebarToggle').addEventListener('click', function() {
   var sidebar = document.getElementById('sidebar');
   var content = document.querySelector('.col-md-10');
@@ -61,22 +63,4 @@ document.getElementById('sidebarToggle').addEventListener('click', function() {
   }
 });
 
-document.addEventListener("DOMContentLoaded", function() {
-  const healthScoreCheckbox = document.getElementById('healthScoreCheckbox');
-  const moodScoreCheckbox = document.getElementById('moodScoreCheckbox');
-  const chart = document.getElementById('combinedChart').chart;
 
-  function updateChart() {
-    const series = [];
-    if (healthScoreCheckbox.checked) {
-      series.push({ name: '健康スコア', data: JSON.parse(document.getElementById('healthScoresData').textContent), fillColor: 'rgba(0, 0, 255, 0.3)', lineWidth: 0, marker: { enabled: false } });
-    }
-    if (moodScoreCheckbox.checked) {
-      series.push({ name: '気分スコア', data: JSON.parse(document.getElementById('moodScoresData').textContent), fillColor: 'rgba(255, 0, 0, 0.3)', lineWidth: 0, marker: { enabled: false } });
-    }
-    chart.update({ series: series });
-  }
-
-  healthScoreCheckbox.addEventListener('change', updateChart);
-  moodScoreCheckbox.addEventListener('change', updateChart);
-});

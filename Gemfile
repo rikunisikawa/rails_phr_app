@@ -45,6 +45,9 @@ gem "bootsnap", require: false
 gem 'chartkick'
 gem 'chart-js-rails'
 gem 'groupdate'
+
+gem 'debug', group: [:development, :test]
+
 # Use Sass to process CSS
 # gem "sassc-rails"
 
