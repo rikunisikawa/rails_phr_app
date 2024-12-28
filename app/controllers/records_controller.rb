@@ -7,6 +7,9 @@ class RecordsController < ApplicationController
     @exercise_data = @records.group_by_day(:date).average(:exercise).transform_values { |v| v ? 1 : nil }
     @meditation_data = @records.group_by_day(:date).average(:meditation).transform_values { |v| v ? 1 : nil }
 
+    @health_scores_js = @health_scores.map { |date, score| [date.strftime('%Y-%m-%d'), score] }.to_json
+    @mood_scores_js = @mood_scores.map { |date, score| [date.strftime('%Y-%m-%d'), score] }.to_json
+
     p @exercise_data
     p '----------------'
     p @meditation_data
