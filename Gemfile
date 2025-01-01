@@ -45,9 +45,7 @@ gem "bootsnap", require: false
 gem 'chartkick'
 gem 'chart-js-rails'
 gem 'groupdate'
-
-gem 'debug', group: [:development, :test]
-
+gem 'webpacker'
 # Use Sass to process CSS
 # gem "sassc-rails"
 
@@ -56,7 +54,7 @@ gem 'debug', group: [:development, :test]
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri mingw x64_mingw ]
+  gem "debug"
 end
 
 group :development do

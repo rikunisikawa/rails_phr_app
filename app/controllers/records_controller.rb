@@ -1,18 +1,33 @@
 class RecordsController < ApplicationController
   def index
-    today = Date.today
-    @records = Record.all
-    @health_scores = @records.group_by_day(:date).average(:health_score)
-    @mood_scores = @records.group_by_day(:date).average(:mood_score)
-    @exercise_data = @records.group_by_day(:date).average(:exercise).transform_values { |v| v ? 1 : nil }
-    @meditation_data = @records.group_by_day(:date).average(:meditation).transform_values { |v| v ? 1 : nil }
+    @selected_date = params[:date] ? Date.strptime(params[:date], "%Y-%m") : Date.today
+    start_of_month = @selected_date.beginning_of_month
+    end_of_month = @selected_date.end_of_month
+    @records = Record.where(date: start_of_month..end_of_month)
+    
+    all_dates = (start_of_month..end_of_month).to_a
 
-    @health_scores_js = @health_scores.map { |date, score| [date.strftime('%Y-%m-%d'), score] }.to_json
-    @mood_scores_js = @mood_scores.map { |date, score| [date.strftime('%Y-%m-%d'), score] }.to_json
+    @health_scores = all_dates.map { |date| [date, @records.find { |r| r.date == date }&.health_score] }.to_h
+    @mood_scores = all_dates.map { |date| [date, @records.find { |r| r.date == date }&.mood_score] }.to_h
+    @muscle_training_data = all_dates.map { |date| [date, @records.find { |r| r.date == date }&.muscle_training ? 1 : nil] }.to_h
+    @running_data = all_dates.map { |date| [date, @records.find { |r| r.date == date }&.running ? 1 : nil] }.to_h
+    @stretching_data = all_dates.map { |date| [date, @records.find { |r| r.date == date }&.stretching ? 1 : nil] }.to_h
 
-    p @exercise_data
-    p '----------------'
-    p @meditation_data
+    p @records
+    p 'health_scores----------------'
+
+    p 'health_scores----------------'
+    p @health_scores
+    p 'mood_scores----------------'
+
+    p @mood_scores 
+    p 'muscle_training_data----------------'
+
+    p @muscle_training_data
+    p 'running_data----------------'
+    p @running_data
+    p 'stretching_data----------------'
+    p @stretching_data
 
     # # 今日の数値が入力されているかチェック
     # today_record = @records.find { |r| r.date == today }
@@ -63,30 +78,6 @@ class RecordsController < ApplicationController
   private
 
   def record_params
-    params.require(:record).permit(
-      :date, 
-      :health_score, 
-      :mood_score, 
-      :exercise, 
-      :exercise_type, 
-      :exercise_duration, 
-      :meditation, 
-      :meditation_duration, 
-      :sleep_duration, 
-      :stress_level, 
-      :weight, 
-      :temperature, 
-      :concentration, 
-      :fatigue, 
-      :memo,
-      :exercise_type_other # 一時的に許可
-    ).tap do |whitelisted|
-      # 「その他」が選択された場合、exercise_typeを上書き
-      if whitelisted[:exercise_type] == 'その他'
-        whitelisted[:exercise_type] = params[:record][:exercise_type_other]
-      end
-      # 不要なパラメータを削除
-      whitelisted.delete(:exercise_type_other)
-    end
+    params.require(:record).permit(:date, :health_score, :mood_score, :stress_level, :concentration, :fatigue, :weight, :temperature, :memo, :muscle_training, :running, :stretching)
   end
 end

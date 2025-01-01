@@ -1,87 +1,35 @@
 <!-- filepath: /home/riku_nishikawa/docker/rails_phr_app/app/views/records/index.html.erb -->
 
 <style>
-  .material-symbols-outlined {
-    font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24
-  }
   .overlay-marker {
-      width: 50px;
-      height: 50px;
-      position: absolute;
-      top: 53px;   /* chartArea top */
-      left: 528px; /* chartArea left */
+    width: 20px;
+    height: 20px;
+    position: absolute;
+  }
+  .chartWithMarkerOverlay {
+    position: relative;
+    width: 100%;
   }
 </style>
 
 <div class="container-fluid mt-4">
-  <h2><%= Date.today.strftime("%Y年%m月") %></h2>
-  <div class="row">
-    <div class="col-md-12">
-      <div id="chart_div" style="width: 100%; height: 500px;"></div>
-
-      <script type="text/javascript">
-        google.charts.load('current', {'packages':['corechart', 'table']});
-        google.charts.setOnLoadCallback(drawChart);
-
-        function drawChart() {
-          var data = google.visualization.arrayToDataTable([
-            ['日付', '健康スコア', '気分スコア', '運動時間 (分)'],
-            <% @health_scores.each do |date, health_score| %>
-              ['<%= date.strftime("%-m/%-d") %>', <%= health_score.nil? ? 'null' : health_score %>, <%= @mood_scores[date].nil? ? 'null' : @mood_scores[date] %>, <%= @exercise_data[date].nil? ? 'null' : @exercise_data[date] %>],
-            <% end %>
-          ]);
-
-          var options = {
-            title: '健康スコアと気分スコアの推移',
-            curveType: 'function',
-            legend: { position: 'top' },
-            series: {
-              0: { type: 'line' },
-              1: { type: 'line' },
-              2: {
-                type: 'scatter',
-                pointShape: {
-                  type: 'image',
-                  url: '/assets/fitness_center.png',
-                  width: 24,
-                  height: 24
-                },
-                color: 'blue',
-                visibleInLegend: false
-              }
-            },
-            hAxis: {
-              format: 'M/d',
-              gridlines: { count: -1 },
-              ticks: data.getDistinctValues(0).filter((_, i) => i % 5 === 0)
-            },
-          };
-
-          function placeMarker(dataTable) {
-            var cli = this.getChartLayoutInterface();
-            var chartArea = cli.getChartAreaBoundingBox();
-            // "Zombies" is element #5.
-            document.querySelector('.overlay-marker').style.top = Math.floor(cli.getYLocation(dataTable.getValue(30, 1))) - 50 + "px";
-            document.querySelector('.overlay-marker').style.left = Math.floor(cli.getXLocation(30)) - 10 + "px";
-          };
-
-          var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
-
-          google.visualization.events.addListener(chart, 'ready',
-            placeMarker.bind(chart, data));
-
-          chart.draw(data, options);
-        }
-      </script>
-      <div class="overlay-marker">
-        <img src="/assets/fitness_center.png" height="20" width="20">
+  <div class="d-flex align-items-center">
+    <%= link_to records_path(date: @selected_date.prev_month.strftime('%Y-%m')), class: 'btn btn-outline-secondary rounded-circle', style: 'width: 30px; height: 30px; padding: 0;' do %>
+      <i class="material-icons md-18">chevron_left</i>
+    <% end %>
+    <%= form_with url: records_path, method: :get, local: true, class: 'mx-2' do %>
+      <div class="form-group d-flex align-items-center">
+      <%= month_field_tag :date, @selected_date.strftime('%Y-%m'), class: 'form-control', style:'width:150px', disabled: true %>
       </div>
+    <% end %>
+    <%= link_to records_path(date: @selected_date.next_month.strftime('%Y-%m')), class: 'btn btn-outline-secondary rounded-circle', style: 'width: 30px; height: 30px; padding: 0;' do %>
+      <i class="material-icons md-18">chevron_right</i>
+    <% end %>
+  </div>
+  <div class="row">
+    <div class="col-md-12 chartWithMarkerOverlay">
+      <div id="chart_div" style="width: 100%; height: 500px;"></div>
     </div>
-
   </div>
 
   <div class="table-responsive mt-4">
@@ -89,16 +37,15 @@
       <thead class="thead-dark">
         <tr>
           <th style="border: 1px solid #ddd;">項目</th>
-          <% (Date.today.beginning_of_month..Date.today.end_of_month).each do |date| %>
+          <% (@selected_date.beginning_of_month..@selected_date.end_of_month).each do |date| %>
             <th class="highlighted-date" style="border: 1px solid #ddd;" data-date="<%= date.strftime('%Y-%m-%d') %>"><%= date.strftime("%-d") %></th>
           <% end %>
         </tr>
       </thead>
-
       <tbody>
         <tr>
           <td style="width: 150px; border: 1px solid #ddd;">健康スコア</td>
-          <% (Date.today.beginning_of_month..Date.today.end_of_month).each do |date| %>
+          <% (@selected_date.beginning_of_month..@selected_date.end_of_month).each do |date| %>
             <% record = @records.find { |r| r.date == date } %>
             <td style="border: 1px solid #ddd;" data-record-id="<%= record&.id %>">
               <%= record&.health_score %>
@@ -107,107 +54,10 @@
         </tr>
         <tr>
           <td style="width: 150px; border: 1px solid #ddd;">気分スコア</td>
-          <% (Date.today.beginning_of_month..Date.today.end_of_month).each do |date| %>
+          <% (@selected_date.beginning_of_month..@selected_date.end_of_month).each do |date| %>
             <% record = @records.find { |r| r.date == date } %>
             <td style="border: 1px solid #ddd;" data-record-id="<%= record&.id %>">
               <%= record&.mood_score %>
-            </td>
-          <% end %>
-        </tr>
-        <tr>
-          <td style="width: 150px; border: 1px solid #ddd;">運動の種類</td>
-          <% (Date.today.beginning_of_month..Date.today.end_of_month).each do |date| %>
-            <% record = @records.find { |r| r.date == date } %>
-            <td style="border: 1px solid #ddd;" data-record-id="<%= record&.id %>">
-              <%= record&.exercise_type %>
-            </td>
-          <% end %>
-        </tr>
-        <tr>
-          <td style="width: 150px; border: 1px solid #ddd;">運動時間 (分)</td>
-          <% (Date.today.beginning_of_month..Date.today.end_of_month).each do |date| %>
-            <% record = @records.find { |r| r.date == date } %>
-            <td style="border: 1px solid #ddd;" data-record-id="<%= record&.id %>">
-              <%= record&.exercise_duration %>
-            </td>
-          <% end %>
-        </tr>
-        <tr>
-          <td style="width: 150px; border: 1px solid #ddd;">瞑想時間 (分)</td>
-          <% (Date.today.beginning_of_month..Date.today.end_of_month).each do |date| %>
-            <% record = @records.find { |r| r.date == date } %>
-            <td style="border: 1px solid #ddd;" data-record-id="<%= record&.id %>">
-              <%= record&.meditation_duration %>
-            </td>
-          <% end %>
-        </tr>
-        <tr>
-          <td style="width: 150px; border: 1px solid #ddd;">睡眠時間 (時間)</td>
-          <% (Date.today.beginning_of_month..Date.today.end_of_month).each do |date| %>
-            <% record = @records.find { |r| r.date == date } %>
-            <td style="border: 1px solid #ddd;" data-record-id="<%= record&.id %>">
-              <%= record&.sleep_duration %>
-            </td>
-          <% end %>
-        </tr>
-        <tr>
-          <td style="width: 150px; border: 1px solid #ddd;">ストレスレベル</td>
-          <% (Date.today.beginning_of_month..Date.today.end_of_month).each do |date| %>
-            <% record = @records.find { |r| r.date == date } %>
-            <td style="border: 1px solid #ddd;" data-record-id="<%= record&.id %>">
-              <%= record&.stress_level %>
-            </td>
-          <% end %>
-        </tr>
-        <tr>
-          <td style="width: 150px; border: 1px solid #ddd;">体重 (kg)</td>
-          <% (Date.today.beginning_of_month..Date.today.end_of_month).each do |date| %>
-            <% record = @records.find { |r| r.date == date } %>
-            <td style="border: 1px solid #ddd;" data-record-id="<%= record&.id %>">
-              <%= record&.weight %>
-            </td>
-          <% end %>
-        </tr>
-        <tr>
-          <td style="width: 150px; border: 1px solid #ddd;">体温 (℃)</td>
-          <% (Date.today.beginning_of_month..Date.today.end_of_month).each do |date| %>
-            <% record = @records.find { |r| r.date == date } %>
-            <td style="border: 1px solid #ddd;" data-record-id="<%= record&.id %>">
-              <%= record&.temperature %>
-            </td>
-          <% end %>
-        </tr>
-        <tr>
-          <td style="width: 150px; border: 1px solid #ddd;">集中力</td>
-          <% (Date.today.beginning_of_month..Date.today.end_of_month).each do |date| %>
-            <% record = @records.find { |r| r.date == date } %>
-            <td style="border: 1px solid #ddd;" data-record-id="<%= record&.id %>">
-              <%= record&.concentration %>
-            </td>
-          <% end %>
-        </tr>
-        <tr>
-          <td style="width: 150px; border: 1px solid #ddd;">疲労感</td>
-          <% (Date.today.beginning_of_month..Date.today.end_of_month).each do |date| %>
-            <% record = @records.find { |r| r.date == date } %>
-            <td style="border: 1px solid #ddd;" data-record-id="<%= record&.id %>">
-              <%= record&.fatigue %>
-            </td>
-          <% end %>
-        </tr>
-        <tr>
-          <td style="width: 150px; border: 1px solid #ddd;">メモ</td>
-          <% (Date.today.beginning_of_month..Date.today.end_of_month).each do |date| %>
-            <% record = @records.find { |r| r.date == date } %>
-            <td style="border: 1px solid #ddd;" data-record-id="<%= record&.id %>">
-              <% if record&.memo.present? %>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16">
-                  <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5M5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1z"/>
-                  <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1"/>
-                </svg>
-              <% else %>
-                &nbsp;
-              <% end %>
             </td>
           <% end %>
         </tr>
@@ -217,3 +67,69 @@
 
   <%= link_to '登録 / 編集', new_record_path, class: 'btn btn-success mt-3' %>
 </div>
+
+
+<script type="text/javascript">
+  google.charts.load('current', {'packages':['corechart']});
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['日付', '健康スコア', '気分スコア', '筋トレ', 'ランニング', 'ストレッチ'],
+      <% @health_scores.each do |date, health_score| %>
+        ['<%= date.strftime("%-m/%-d") %>', <%= health_score.nil? ? 'null' : health_score.to_f %>, <%= @mood_scores[date].nil? ? 'null' : @mood_scores[date].to_f %>, <%= @muscle_training_data[date].nil? ? 'null' : @muscle_training_data[date].to_f %>, <%= @running_data[date].nil? ? 'null' : @running_data[date].to_f %>, <%= @stretching_data[date].nil? ? 'null' : @stretching_data[date].to_f %>],
+      <% end %>
+    ]);
+
+    console.log(data.toJSON()); // データをコンソールに出力
+
+    var options = {
+      title: '健康スコアと気分スコアの推移',
+      curveType: 'none', // 直線
+      legend: { position: 'top' },
+      series: {
+        0: { type: 'line', pointSize: 5 }, // 健康スコア
+        1: { type: 'line', pointSize: 5 }, // 気分スコア
+        2: { type: 'scatter', pointSize: 5 } , // 筋トレ
+        3: { type: 'scatter', pointSize: 5 }, // ランニング
+        4: { type: 'scatter', pointSize: 5 }  // ストレッチ
+      },
+      hAxis: {
+        format: 'M/d',
+        gridlines: { color: '#ccc', count: -1 }, // 縦の罫線を追加
+        ticks: data.getDistinctValues(0).filter((_, i) => i % 5 === 0)
+      },
+      vAxis: {
+        viewWindow: {
+          min: 0,
+          max: 100
+        }
+      }
+    };
+
+    var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
+
+    google.visualization.events.addListener(chart, 'ready', placeMarkers.bind(chart, data));
+    chart.draw(data, options);
+  }
+
+  function placeMarkers(dataTable) {
+    var cli = this.getChartLayoutInterface();
+    var chartArea = cli.getChartAreaBoundingBox();
+
+    // 既存のマーカーを削除
+    document.querySelectorAll('.overlay-marker').forEach(marker => marker.remove());
+
+    // 0から30までのポイントに対してマーカーを配置
+    for (var i = 0; i <= 30; i++) {
+      if (dataTable.getValue(i, 3) !== null) {
+        var marker = document.createElement('div');
+        marker.className = 'overlay-marker';
+        marker.style.top = Math.floor(cli.getYLocation(dataTable.getValue(i, 3))) - 10 + "px";
+        marker.style.left = Math.floor(cli.getXLocation(i)) + "px";
+        marker.innerHTML = '<img src="/assets/exercise.png" height="20" width="20">';
+        document.querySelector('.chartWithMarkerOverlay').appendChild(marker);
+      }
+    }
+  }
+</script>
