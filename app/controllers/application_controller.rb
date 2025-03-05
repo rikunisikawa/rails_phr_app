@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
     @sidebar_links = [
       { name: 'ホーム', path: root_path },
       { name: '記録一覧', path: records_path },
-      { name: '登録 / 編集', path: new_record_path }
+      { name: '気分の記録', path: new_record_path }
       # 他のリンクやデータを追加
     ]
   end

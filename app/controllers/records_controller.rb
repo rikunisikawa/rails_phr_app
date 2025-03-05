@@ -4,37 +4,40 @@ class RecordsController < ApplicationController
     start_of_month = @selected_date.beginning_of_month
     end_of_month = @selected_date.end_of_month
     @records = Record.where(date: start_of_month..end_of_month)
+    @record = Record.new
+    p @record
     
     all_dates = (start_of_month..end_of_month).to_a
 
     @health_scores = all_dates.map { |date| [date, @records.find { |r| r.date == date }&.health_score] }.to_h
     @mood_scores = all_dates.map { |date| [date, @records.find { |r| r.date == date }&.mood_score] }.to_h
-    @muscle_training_data = all_dates.map { |date| [date, @records.find { |r| r.date == date }&.muscle_training ? 1 : nil] }.to_h
-    @running_data = all_dates.map { |date| [date, @records.find { |r| r.date == date }&.running ? 1 : nil] }.to_h
-    @stretching_data = all_dates.map { |date| [date, @records.find { |r| r.date == date }&.stretching ? 1 : nil] }.to_h
+    @muscle_training_data = all_dates.map { |date| [date, @records.find { |r| r.date == date }&.muscle_training ? 5 : nil] }.to_h
+    @running_data = all_dates.map { |date| [date, @records.find { |r| r.date == date }&.running ? 15 : nil] }.to_h
+    @stretching_data = all_dates.map { |date| [date, @records.find { |r| r.date == date }&.stretching ? 25 : nil] }.to_h
 
-    p @records
-    p 'health_scores----------------'
+    @show_popup = true
+    # !session[:popup_shown] || params[:show_popup] == 'true'
+    # session[:popup_shown] = true
 
-    p 'health_scores----------------'
-    p @health_scores
-    p 'mood_scores----------------'
+    p '@show_popup----------------'
+    p @show_popup
 
-    p @mood_scores 
-    p 'muscle_training_data----------------'
 
-    p @muscle_training_data
-    p 'running_data----------------'
-    p @running_data
-    p 'stretching_data----------------'
-    p @stretching_data
+    # p 'health_scores----------------'
 
-    # # 今日の数値が入力されているかチェック
-    # today_record = @records.find { |r| r.date == today }
-    # # 今日の日付のレコードが存在しない場合、新規作成画面にリダイレクト
-    # unless today_record&.health_score.present? && today_record&.mood_score.present?
-    #   redirect_to new_record_path(date: today.strftime('%Y-%m-%d'))
-    # end
+    # p 'health_scores----------------'
+    # p @health_scores
+    # p 'mood_scores----------------'
+
+    # p @mood_scores 
+    # p 'muscle_training_data----------------'
+
+    # p @muscle_training_data
+    # p 'running_data----------------'
+    # p @running_data
+    # p 'stretching_data----------------'
+    # p @stretching_data
+
   end
 
   def show
@@ -62,6 +65,7 @@ class RecordsController < ApplicationController
 
   def update
     @record = Record.find(params[:id])
+    p @record
     if @record.update(record_params)
       redirect_to @record
     else
@@ -75,9 +79,14 @@ class RecordsController < ApplicationController
     redirect_to records_path
   end
 
+  def daily_summary
+    @selected_date = params[:date] ? Date.parse(params[:date]) : Date.today
+    @records = Record.where(date: @selected_date)
+  end
+
   private
 
   def record_params
-    params.require(:record).permit(:date, :health_score, :mood_score, :stress_level, :concentration, :fatigue, :weight, :temperature, :memo, :muscle_training, :running, :stretching)
+    params.require(:record).permit(:date, :health_score, :mood_score, :stress_level, :concentration, :fatigue, :weight, :temperature, :sleep_duration, :memo, :muscle_training, :running, :stretching)
   end
 end

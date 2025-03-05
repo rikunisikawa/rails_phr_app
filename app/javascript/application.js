@@ -48,19 +48,19 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 
-// サイドバーの表示・非表示を切り替える
-document.getElementById('sidebarToggle').addEventListener('click', function() {
-  var sidebar = document.getElementById('sidebar');
-  var content = document.querySelector('.col-md-10');
-  if (sidebar.style.display === 'none') {
-    sidebar.style.display = 'block';
-    content.classList.remove('col-md-12');
-    content.classList.add('col-md-10');
-  } else {
-    sidebar.style.display = 'none';
-    content.classList.remove('col-md-10');
-    content.classList.add('col-md-12');
-  }
-});
+// // サイドバーの表示・非表示を切り替える
+// document.getElementById('sidebarToggle').addEventListener('click', function() {
+//   var sidebar = document.getElementById('sidebar');
+//   var content = document.querySelector('.col-md-10');
+//   if (sidebar.style.display === 'none') {
+//     sidebar.style.display = 'block';
+//     content.classList.remove('col-md-12');
+//     content.classList.add('col-md-10');
+//   } else {
+//     sidebar.style.display = 'none';
+//     content.classList.remove('col-md-10');
+//     content.classList.add('col-md-12');
+//   }
+// });
 
 

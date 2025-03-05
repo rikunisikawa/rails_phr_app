@@ -10,13 +10,14 @@
         </ul>
       </div>
     <% end %>
-    <div class="form-group mb-4">
+    <div class="form-group mb-4 text-center">
       <%= form.label :date, "日付" %>
-      <div class=" d-flex">
-        <%= form.text_field :date, class: "form-control", value: record.date, readonly: true %>
-        <div class="actions">
-          <%= form.submit "保存", class: "btn btn-primary" %>
-        </div>
+      <div class="d-flex align-items-center justify-content-center">
+      <%= form.datetime_local_field :date, class: "form-control text-center", value:  Time.current.strftime('%Y-%m-%dT%H:%M:%S') %>
+      <%# # record.date.present? ? record.date.strftime('%Y-%m-%dT%H:%M:%S') : %>
+      <div class="actions ms-3">
+        <%= form.submit "保存", class: "btn btn-primary" %>
+      </div>
       </div>
     </div>
     <div class="row">
@@ -168,6 +169,27 @@
     select.addEventListener('change', function() {
       toggleExerciseTypeInput(select);
     });
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+  function syncRangeAndInput(rangeId, inputId) {
+    const range = document.getElementById(rangeId);
+    const input = document.getElementById(inputId);
+
+    range.addEventListener('input', function() {
+      input.value = range.value;
+    });
+
+    input.addEventListener('input', function() {
+      range.value = input.value;
+    });
+  }
+  syncRangeAndInput('health_score_slider', 'health_score_input');
+  syncRangeAndInput('mood_score_slider', 'mood_score_input');
+  syncRangeAndInput('stress_level_slider', 'stress_level_input');
+  syncRangeAndInput('concentration_slider', 'concentration_input');
+  syncRangeAndInput('fatigue_slider', 'fatigue_input');
+  // 他のフィールドも同様に追加
   });
 </script>
 

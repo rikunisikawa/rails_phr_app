@@ -1,0 +1,13 @@
+<div class="d-flex align-items-center">
+  <%= link_to records_path(date: @selected_date.prev_month.strftime('%Y-%m')), class: 'btn btn-outline-secondary rounded-circle', style: 'width: 30px; height: 30px; padding: 0;' do %>
+    <i class="material-icons md-18">chevron_left</i>
+  <% end %>
+  <%= form_with url: records_path, method: :get, local: true, class: 'mx-2' do %>
+    <div class="form-group d-flex align-items-center">
+      <%= month_field_tag :date, @selected_date.strftime('%Y-%m'), class: 'form-control', style:'width:150px', disabled: true %>
+    </div>
+  <% end %>
+  <%= link_to records_path(date: @selected_date.next_month.strftime('%Y-%m')), class: 'btn btn-outline-secondary rounded-circle', style: 'width: 30px; height: 30px; padding: 0;' do %>
+    <i class="material-icons md-18">chevron_right</i>
+  <% end %>
+</div>

@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Defines the root path route ("/")
-  # root "articles#index"
-  resources :records
+  resources :records do
+    collection do
+      get 'daily_summary'
+    end
+  end
   root "records#index"
 end

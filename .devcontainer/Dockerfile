@@ -12,6 +12,9 @@ RUN apt-get update -qq && apt-get install -y \
     npm install --global yarn && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# タイムゾーンを日本時間に設定
+ENV TZ=Asia/Tokyo
+
 # docker内の作業ディレクトリを作成＆設定
 WORKDIR /rails_phr
 

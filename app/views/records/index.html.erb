@@ -10,21 +10,48 @@
     position: relative;
     width: 100%;
   }
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+  }
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+  }
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
 </style>
-
+<!-- 画面の右上に円の＋アイコンで「気分の記録」ボタンを追加 -->
+<div style="position: fixed; top: 20px; right: 20px;">
+  <button id="newRecordBtn" class="btn btn-primary rounded-circle" style="width: 50px; height: 50px; padding: 0;">
+    <i class="material-icons">add</i>
+  </button>
+</div>
 <div class="container-fluid mt-4">
   <div class="d-flex align-items-center">
-    <%= link_to records_path(date: @selected_date.prev_month.strftime('%Y-%m')), class: 'btn btn-outline-secondary rounded-circle', style: 'width: 30px; height: 30px; padding: 0;' do %>
-      <i class="material-icons md-18">chevron_left</i>
-    <% end %>
-    <%= form_with url: records_path, method: :get, local: true, class: 'mx-2' do %>
-      <div class="form-group d-flex align-items-center">
-      <%= month_field_tag :date, @selected_date.strftime('%Y-%m'), class: 'form-control', style:'width:150px', disabled: true %>
-      </div>
-    <% end %>
-    <%= link_to records_path(date: @selected_date.next_month.strftime('%Y-%m')), class: 'btn btn-outline-secondary rounded-circle', style: 'width: 30px; height: 30px; padding: 0;' do %>
-      <i class="material-icons md-18">chevron_right</i>
-    <% end %>
+    <%= render 'shared/date_navigation', selected_date: @selected_date %>
+
   </div>
   <div class="row">
     <div class="col-md-12 chartWithMarkerOverlay">
@@ -65,9 +92,20 @@
     </table>
   </div>
 
-  <%= link_to '登録 / 編集', new_record_path, class: 'btn btn-success mt-3' %>
+  <%= link_to '気分の記録', new_record_path, class: 'btn btn-success mt-3' %>
 </div>
 
+
+
+<% if @show_popup %>
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>今どんな感じ？</h2>
+      <%= render 'form', record: Record.new(date: Date.today) %>
+    </div>
+  </div>
+<% end %>
 
 <script type="text/javascript">
   google.charts.load('current', {'packages':['corechart']});
@@ -84,26 +122,26 @@
     console.log(data.toJSON()); // データをコンソールに出力
 
     var options = {
-      title: '健康スコアと気分スコアの推移',
+      title: '1カ月分の記録',
       curveType: 'none', // 直線
-      legend: { position: 'top' },
+      legend: { position: 'bottom' },
       series: {
-        0: { type: 'line', pointSize: 5 }, // 健康スコア
-        1: { type: 'line', pointSize: 5 }, // 気分スコア
-        2: { type: 'scatter', pointSize: 5 } , // 筋トレ
-        3: { type: 'scatter', pointSize: 5 }, // ランニング
-        4: { type: 'scatter', pointSize: 5 }  // ストレッチ
+        0: { type: 'line', pointSize: 5, lineDashStyle: [2, 2] }, // 健康スコア
+        1: { type: 'line', pointSize: 5, lineDashStyle: [2, 2] }, // 気分スコア
+        2: { type: 'scatter', pointSize: 0, visibleInLegend: false }, // 筋トレ
+        3: { type: 'scatter', pointSize: 0, visibleInLegend: false }, // ランニング
+        4: { type: 'scatter', pointSize: 0, visibleInLegend: false }  // ストレッチ
       },
       hAxis: {
-        format: 'M/d',
-        gridlines: { color: '#ccc', count: -1 }, // 縦の罫線を追加
-        ticks: data.getDistinctValues(0).filter((_, i) => i % 5 === 0)
+      format: 'M/d',
+      gridlines: { color: '#ccc', count: -1 }, // 縦の罫線を追加
+      ticks: data.getDistinctValues(0).filter((_, i) => i % 5 === 0)
       },
       vAxis: {
-        viewWindow: {
-          min: 0,
-          max: 100
-        }
+      viewWindow: {
+        min: 0,
+        max: 100
+      }
       }
     };
 
@@ -121,15 +159,50 @@
     document.querySelectorAll('.overlay-marker').forEach(marker => marker.remove());
 
     // 0から30までのポイントに対してマーカーを配置
-    for (var i = 0; i <= 30; i++) {
-      if (dataTable.getValue(i, 3) !== null) {
-        var marker = document.createElement('div');
-        marker.className = 'overlay-marker';
-        marker.style.top = Math.floor(cli.getYLocation(dataTable.getValue(i, 3))) - 10 + "px";
-        marker.style.left = Math.floor(cli.getXLocation(i)) + "px";
-        marker.innerHTML = '<img src="/assets/exercise.png" height="20" width="20">';
-        document.querySelector('.chartWithMarkerOverlay').appendChild(marker);
+    for(var i = 3; i <= 5; i++) {
+      for(var j = 0; j < dataTable.getNumberOfRows(); j++) {
+        if (dataTable.getValue(j, i) !== null) {
+          var marker = document.createElement('div');
+          marker.className = 'overlay-marker';
+          marker.style.top = Math.floor(cli.getYLocation(dataTable.getValue(j, i))) - 10 + "px";
+          marker.style.left = Math.floor(cli.getXLocation(j)) + "px";
+          if (i == 3) {
+            marker.innerHTML = '<img src="/assets/exercise.png" height="30" width="30">';
+          } else if (i == 4) {
+            marker.innerHTML = '<img src="/assets/running.png" height="30" width="30">';
+          } else if (i == 5) {
+            marker.innerHTML = '<img src="/assets/physical_therapy.png" height="30" width="30">';
+          }
+          document.querySelector('.chartWithMarkerOverlay').appendChild(marker);
+        }
       }
     }
   }
+
+  // ポップアップの表示
+  document.addEventListener('DOMContentLoaded', function() {
+    var modal = document.getElementById("myModal");
+    var span = document.getElementsByClassName("close")[0];
+    var newRecordBtn = document.getElementById("newRecordBtn");
+
+    if (modal) {
+      if (<%= @show_popup %>) {
+        modal.style.display = "block";
+      }
+
+      span.onclick = function() {
+        modal.style.display = "none";
+      }
+
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
+
+      newRecordBtn.onclick = function() {
+        modal.style.display = "block";
+      }
+    }
+  });
 </script>

@@ -1,0 +1,42 @@
+<h1><%= @selected_date.strftime("%Y年%m月%d日") %>のデータ一覧</h1>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>時間</th>
+      <th>健康スコア</th>
+      <th>気分スコア</th>
+      <th>ストレスレベル</th>
+      <th>集中力</th>
+      <th>疲労感</th>
+      <th>体重 (kg)</th>
+      <th>体温 (℃)</th>
+      <th>睡眠時間 (時間)</th>
+      <th>メモ</th>
+      <th>筋トレ</th>
+      <th>ランニング</th>
+      <th>ストレッチ</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @records.each do |record| %>
+      <tr>
+        <td><%= record.created_at.strftime("%H:%M") %></td>
+        <td><%= record.health_score %></td>
+        <td><%= record.mood_score %></td>
+        <td><%= record.stress_level %></td>
+        <td><%= record.concentration %></td>
+        <td><%= record.fatigue %></td>
+        <td><%= record.weight %></td>
+        <td><%= record.temperature %></td>
+        <td><%= record.sleep_duration %></td>
+        <td><%= record.memo %></td>
+        <td><%= record.muscle_training ? 'はい' : 'いいえ' %></td>
+        <td><%= record.running ? 'はい' : 'いいえ' %></td>
+        <td><%= record.stretching ? 'はい' : 'いいえ' %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to 'Back', records_path, class: 'btn btn-secondary' %>
